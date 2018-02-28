@@ -1,5 +1,5 @@
 # SOFC-EIS-ECM
-Matlab code for fitting of effective circuit models using a Nquist plot, for a solid-oxide fuel cell
+Matlab code for fitting of effective circuit models to a Nyquist plot, for a solid-oxide fuel cell
 
 Requires a 3-column csv of experimental EIS data as input.
 examplerun.m contains some examples of the performance and results given typical data and constraints on the minimization.
