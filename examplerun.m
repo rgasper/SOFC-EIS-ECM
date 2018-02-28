@@ -11,6 +11,7 @@ clear;clc
 figure(1)
 [fit_1, err_1] = fit_eis_dat('exp_data_fine.csv',[],[],[]);
 title('Random Initial Guess & Default UB, LB')
+
 %% with initial guess
 %this is using a pretty good initial guess.
 %Notice with re-running there's some, but little change- we're close to a good
