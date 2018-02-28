@@ -1,6 +1,6 @@
 %A wee example script for how to use the EIS effective circuit model fitting function
 %Ray Gasper, 2018, UMass Amherst
-clear;clc
+clear;clc;
 
 %% simplest possible run- random initial guess, default constraints
 %If you run this multiple times you'll notice the ECM can change
@@ -24,7 +24,7 @@ title('Good Initial Guess & Default UB, LB')
 %% with bad UB and LB, random initial guess
 % you need good upper bounds and lower bounds, see the result of a poor set here
 %just arbitrarily setting bounds on all the parameters almost always
-%causes failure to produce a good set
+%causes failure to produce a good fit
 ub=[0.1,0.1,0.99,0.5,0.5,0.99,0.5,0.5,0.5,0.5,0.99,0.99];
 lb=[0,0,0,0,0,0,0.1,0.1,0,0,0,0];
 figure(3)
