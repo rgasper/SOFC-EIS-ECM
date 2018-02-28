@@ -63,20 +63,24 @@ end
     fmincon(@ecm_min_fit, params, A, b, Aeq, beq, lb, ub);
 
 %% Plot
+R_shift = R_element(Freq,[],1); %unit horizontal shift element for fancy plotting
 
+% to modify the ECM structure, please modify in ecm_min_fit first then copy here, to ensure consistency
 R = R_element(Freq,[], fitted_params(1));
 RQ1 = RQ_element(Freq, fitted_params(2:3), fitted_params(4)); % Yq, nq
 RQ2 = RQ_element(Freq, fitted_params(5:6), fitted_params(7)); % Yq, nq
 GE = GE_element(Freq, fitted_params(8), fitted_params(9)); % Tc
 FLW = FLW_element(Freq, fitted_params(10:11), fitted_params(12));% Tw, nw
-R_shift = R_element(Freq,[],1);
 
-Rr = R(:,2); Ri = R(:,3);
-RQr1 = RQ1(:,2); RQi1 = RQ1(:,3);
-RQr2 = RQ2(:,2); RQi2 = RQ2(:,3);
-GEr = GE(:,2); GEi = GE(:,3);
-FLWr = FLW(:,2); FLWi = FLW(:,3);
-Sr = R_shift(:,2); Si = R_shift(:,3);
+Rr =    R(:,2);         Ri = R(:,3);
+RQr1 =  RQ1(:,2);       RQi1 = RQ1(:,3);
+RQr2 =  RQ2(:,2);       RQi2 = RQ2(:,3);
+GEr =   GE(:,2);        GEi = GE(:,3);
+FLWr =  FLW(:,2);       FLWi = FLW(:,3);
+Sr =    R_shift(:,2);   Si = R_shift(:,3);
+
+sim_r = Rr(:,2) + RQr1(:,2) + RQr2(:,2) + GEr(:,2) + FLWr(:,2);
+sim_i = Ri(:,3) + RQi1(:,3) + RQi2(:,3) + GEi(:,3) + FLWi(:,3);
 
 plot(exp_r,exp_i,'ok','LineWidth',1)
 xs = xlim;
@@ -87,7 +91,7 @@ xlabel('Z_{real}(\Omega cm^2)')
 ylabel('Z_{imaginary}(\Omega cm^2)')
 axis manual
 hold on
-plot(Rr+RQr1+RQr2+GEr+FLWr, RQi1+RQi2+GEi+FLWi,'b-','LineWidth',1)
+plot(sim_r,sim_i,'b-','LineWidth',1)
 plot(RQr1+Sr*(fitted_params(1)), RQi1,'-r')
 plot(RQr2+Sr*(fitted_params(1)+fitted_params(4)), RQi2,'-g')
 plot(GEr+Sr*(fitted_params(1)+fitted_params(4)+fitted_params(7)), GEi,'-m')
@@ -121,6 +125,7 @@ function err = ecm_min_fit(params)
 % note that this is equal to the complex conjugate of the true complex
 % error value
 
+%If you want to modify the ECM structure, make your changes here then copy to the plotting section
 Rs = R_element(Freq,[], params(1));
 RQ1s = RQ_element(Freq, params(2:3), params(4)); % Yq, nq
 RQ2s = RQ_element(Freq, params(5:6), params(7)); % Yq, nq
