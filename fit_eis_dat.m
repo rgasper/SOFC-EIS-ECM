@@ -125,7 +125,8 @@ function err = ecm_min_fit(params)
 % note that this is equal to the complex conjugate of the true complex
 % error value
 
-%If you want to modify the ECM structure, make your changes here then copy to the plotting section
+%If you want to modify the ECM structure, make your changes here then copy to the plotting section & then
+%rename vars outside this to avoid causing implicit global variable scoping
 Rs = R_element(Freq,[], params(1));
 RQ1s = RQ_element(Freq, params(2:3), params(4)); % Yq, nq
 RQ2s = RQ_element(Freq, params(5:6), params(7)); % Yq, nq
