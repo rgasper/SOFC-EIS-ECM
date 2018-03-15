@@ -1,5 +1,4 @@
 function [fitted_params, final_error] = fit_eis_dat(exp_dat, params, ub, lb)
-%% Setup
 %Ray Gasper, 2018, UMass Amherst
 %fits an EIS curve using a predefined effective circuit model that is
 %typical for solid-oxide fuel cells
@@ -33,6 +32,7 @@ function [fitted_params, final_error] = fit_eis_dat(exp_dat, params, ub, lb)
 %  1      2       3      4     5       6       7       8     9      10       11    12
 %R1(R),RQ1(Yq),RQ1(nq),RQ1(R),RQ2(Yq),RQ2(nq),RQ2(R),GE(Tc),GE(R),FLW(Tw),FLW(nw),FLW(R)
 
+%% Setup
 %read the experimental data
 dat = csvread(exp_dat,1,0);
 exp_dat = clean_eis(dat);
@@ -45,17 +45,14 @@ if isempty(params)
     %for the SOFCS initial parameters, ub, and lb all 0<x<1 work alright
     params = rand(1,12);
 end
-
-A = [];
-b = [];
-Aeq = [];
-beq = [];
 if isempty(lb)
     lb = [0 0 0 0 0 0 0 0 0 0 0 0];
 end
 if isempty(ub)
     ub = [1 1 1 1 1 1 1 1 1 1 1 1];
 end
+A = []; Aeq = [];
+b = []; beq = [];
 
 %% Fit the model
 [fitted_params, final_error] = ...
@@ -79,6 +76,7 @@ GEr = GE(:,2);        GEi = GE(:,3);
 FLWr = FLW(:,2);      FLWi = FLW(:,3);
 Sr = R_shift(:,2);    Si = R_shift(:,3);
 
+% ECM is just the five elements in series
 sim_r = Rr + RQr1 + RQr2 + GEr + FLWr;
 sim_i = Ri + RQi1 + RQi2 + GEi + FLWi;
 
@@ -125,8 +123,6 @@ end
 function err = ecm_min_fit(params)
 % ecm fit function with defined circuit for implementation in matlab's
 % fminsearch funtion
-% note that this is equal to the complex conjugate of the true complex
-% error value
 
 %If you want to modify the ECM structure, make your changes here then copy to the plotting section & then
 %rename vars outside this to avoid causing implicit global variable scoping
@@ -147,7 +143,7 @@ err = err_r + err_i;
 end
 
 
-%% Element functions
+%% Circuit Element functions
 function dat = R_element(omega, params, R)
  % from a given set of frequencies generates the Zr and Zi for a resistor
 
