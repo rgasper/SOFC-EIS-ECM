@@ -73,7 +73,7 @@ GE = GE_element(Freq, fitted_params(8), fitted_params(9)); % Tc
 FLW = FLW_element(Freq, fitted_params(10:11), fitted_params(12));% Tw, nw
 
 Rr = R(:,2);          Ri = R(:,3);
-RQr1 = R1(:,2);       RQi1 = RQ1(:,3);
+RQr1 = RQ1(:,2);      RQi1 = RQ1(:,3);
 RQr2 = RQ2(:,2);      RQi2 = RQ2(:,3);
 GEr = GE(:,2);        GEi = GE(:,3);
 FLWr = FLW(:,2);      FLWi = FLW(:,3);
