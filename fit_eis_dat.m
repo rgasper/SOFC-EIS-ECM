@@ -4,10 +4,12 @@ function [fitted_params, final_error] = fit_eis_dat(exp_dat, params, ub, lb)
 %fits an EIS curve using a predefined effective circuit model that is
 %typical for solid-oxide fuel cells
 %Produces a Nyquist plot with the experimental data, total ECM fit, and ECM
-%split up element-wise
+%split up element-wise in a way that allows intuitive understanding
 %Currently ignores positive imaginary parts of the EIS, thus also the L
 %element
+
 %ECM structure: R-RQ1-RQ2-GE-FLW
+
 %R: Resistor; parameters: Resistance
 %RQ: RQ element; parameters: Yq, nq, Resistance
 %GE: Gerischer element; parameters: Tc, Resistance
@@ -17,7 +19,7 @@ function [fitted_params, final_error] = fit_eis_dat(exp_dat, params, ub, lb)
 %constraints in order to ensure the realism of the fit
 
 %exp_dat should be a string containing the address of a csv with EIS data
-%in it.
+%in it. Fitting accuracy will depend on sampling density
 % EIS data structure:
 % Frequencies, Real, Imaginary
 %   dat      , dat , dat
@@ -25,7 +27,6 @@ function [fitted_params, final_error] = fit_eis_dat(exp_dat, params, ub, lb)
 %   dat      , dat , dat
 %   dat      , dat , dat
 %   dat      , dat , dat
-%   etc
 
 %initial guess, upper bound, and lower bound are all 1x12 vectors
 %corresponding to the paramater list:
@@ -36,9 +37,7 @@ function [fitted_params, final_error] = fit_eis_dat(exp_dat, params, ub, lb)
 dat = csvread(exp_dat,1,0);
 exp_dat = clean_eis(dat);
 global Freq exp_i exp_r
-Freq = exp_dat(:,1);
-exp_r = exp_dat(:,2);
-exp_i = exp_dat(:,3);
+Freq = exp_dat(:,1); exp_r = exp_dat(:,2); exp_i = exp_dat(:,3);
 
 %initialize fmincon inputs
 if isempty(params)
@@ -65,7 +64,8 @@ end
 %% Plot
 R_shift = R_element(Freq,[],1); %unit horizontal shift element for fancy plotting
 
-% to modify the ECM structure, please modify in ecm_min_fit first then copy here, to ensure consistency
+% to modify the ECM structure, please modify in ecm_min_fit first then copy here and change the name of vars
+% the first bit ensures consistency and the second bit avoids implicit global scoping
 R = R_element(Freq,[], fitted_params(1));
 RQ1 = RQ_element(Freq, fitted_params(2:3), fitted_params(4)); % Yq, nq
 RQ2 = RQ_element(Freq, fitted_params(5:6), fitted_params(7)); % Yq, nq
@@ -99,6 +99,7 @@ plot(FLWr+Sr*(fitted_params(1)+fitted_params(4)+fitted_params(7)+fitted_params(9
 hold off
 legend('Exp. Data','ECM fit','RQ1','RQ2','GE','FLW')
 
+
 %% function to clean data by excluding positive imaginary components
 function dat = clean_eis(exp_dat)
  % cleans EIS data of Zi > 0 elements
@@ -118,6 +119,8 @@ function dat = clean_eis(exp_dat)
  
  dat = [c_omega, c_Zr, c_Zi]; 
 end
+
+
 %% Function to calculate total squared error of a particular ECM parameter set
 function err = ecm_min_fit(params)
 % ecm fit function with defined circuit for implementation in matlab's
@@ -142,6 +145,8 @@ err_i = sum((exp_i - fit_i).^2);
 
 err = err_r + err_i;
 end
+
+
 %% Element functions
 function dat = R_element(omega, params, R)
  % from a given set of frequencies generates the Zr and Zi for a resistor
@@ -152,6 +157,7 @@ function dat = R_element(omega, params, R)
  dat(:,2) = real(Z);
  dat(:,3) = imag(Z);
 end
+
 function dat = RQ_element(omega, params, R)
  % from a given set of frequencies generates the Zr and Zi for a RQ
  % element
@@ -165,6 +171,7 @@ function dat = RQ_element(omega, params, R)
  dat(:,2) = real(Z);
  dat(:,3) = imag(Z); 
 end
+
 function dat = GE_element(omega, params, R)
  % from a given set of frequencies generates the Zr and Zi for a
  % Gerischer Element
@@ -176,6 +183,7 @@ function dat = GE_element(omega, params, R)
  dat(:,2) = real(Z);
  dat(:,3) = imag(Z); 
 end
+
 function dat = FLW_element(omega, params, R)
  % from a given set of frequencies generates the Zr and Zi for a
  % Finite-Length Warburg Element
